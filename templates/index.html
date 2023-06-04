@@ -245,7 +245,7 @@
             })
             .then(data => {
                 var precision = parseFloat(document.getElementById('precision').value);
-                document.getElementById('result').innerText = 'YTM = \( r = \) = ' + (data.YTM * 100).toFixed(precision) + "%";
+                document.getElementById('result').innerText = 'YTM = ' + (data.YTM * 100).toFixed(precision) + "%";
                 MathJax.typeset();
             })
             .catch(error => {
