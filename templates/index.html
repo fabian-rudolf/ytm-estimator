@@ -90,8 +90,8 @@
 </head>
 <body>
     <div id="result-box" class="box">
-        <h2>Results</h2>
-        <p id="result">The numerically estimated YTM is: \( r = \) please fill out all values</p>
+        <h2>Result</h2>
+        <p id="result">YTM = \( r = \) = please fill out all values</p>
 
         <div id="notification" class="notification">
             <div class="notification-content">
@@ -245,7 +245,7 @@
             })
             .then(data => {
                 var precision = parseFloat(document.getElementById('precision').value);
-                document.getElementById('result').innerText = 'The numerically estimated YTM is: \\( r = \\) ' + (data.YTM * 100).toFixed(precision) + "%";
+                document.getElementById('result').innerText = 'YTM = \( r = \) = ' + (data.YTM * 100).toFixed(precision) + "%";
                 MathJax.typeset();
             })
             .catch(error => {
