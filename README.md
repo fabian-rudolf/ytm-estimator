@@ -10,7 +10,7 @@ However, calculating YTM can be a bit tricky as it involves solving a complex eq
 - **Real-time calculation**: As soon as you input the bond parameters, the YTM is calculated in real time. No need to hit 'calculate' or wait.
 
 ## Usage
-Just visit our web app hosted [here](https://ytmestimator-1-z6391136.deta.app/).
+Just visit the running web app demo hosted [here](https://ytmestimator-1-z6391136.deta.app/).
 
 ## Project Structure
 The codebase is structured as follows:
