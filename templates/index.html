@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yield to Maturity (YTM) Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .box {
+            background-color: #fff;
+            padding: 30px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 768px) {
+            .box {
+                width: 70vw;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .box {
+                width: 50vw;
+            }
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 90%;
+        }
+        #result-box {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .explanation-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .explanation-table thead th {
+            background-color: #4CAF50;
+            color: white;
+            text-align: left;
+            padding: 15px;
+        }
+
+        .explanation-table tbody td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .explanation-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .notification {
+            display: none;
+            background-color: rgba(0,0,0,0.4);
+            padding: 15px;
+        }
+
+        .notification-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: auto;
+        }
+
+        .notification-message {
+            margin-bottom: 10px;
+        }
+    </style>    
+</head>
+<body>
+    <div id="result-box" class="box">
+        <h2>Results</h2>
+        <p id="result">The numerically estimated YTM is: \( r = \) please fill out all values</p>
+
+        <div id="notification" class="notification">
+            <div class="notification-content">
+              <div id="notification-messages"></div>
+              <button onclick="closeNotifications()">OK</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="box">
+        <h2>Yield to Maturity (YTM) Calculator</h2>
+        <form id="ytm-form">
+            <label for="F" title="The face value or par value of the bond.">Face / Par Value (USD):</label><br>
+            <input type="number" id="F" name="F" min="0" step="0.0001" value="95" required placeholder="Enter bond's face or par value (e.g. $100; typically the initial offering price)"><br>
+            <label for="P" title="The market price of the bond.">Price (USD):</label><br>
+            <input type="number" id="P" name="P" min="0" step="0.0001" value="100" required placeholder="Enter bond's current market price"><br>
+            <label for="C" title="The annual coupon payment of the bond.">Coupon (%):</label><br>
+            <input type="number" id="C" name="C" min="-100" step="0.0001" value="5" required placeholder="Enter bond's annual coupon payment"><br>
+            <label for="n" title="The number of years until the bond matures.">Years to Maturity (integer number):</label><br>
+            <input type="number" id="n" name="n" min="1" step="1" value="1" required placeholder="Enter bond's years to maturity"><br>
+            <label for="r_guess" title="The initial guessed value for numerical approximation.">Initital YTM guess (%):</label><br>
+            <input type="number" id="r_guess" name="r_guess" min="-100" max="9999999" step="0.0001" value="5" required placeholder="Enter the initial guess for YTM">
+            <label for="precision" title="The desired precision for the YTM result.">Precision:</label><br>
+            <input type="number" id="precision" name="precision" min="1" max="15" step="1" value="2" required placeholder="Enter desired precision as the amount of decimal places in the YTM result."><br>
+        </form>   
+    </div>
+
+    <div id="explanation-box" class="box">
+        <h2>Explanation</h2>     
+        <div id="calculation-steps">
+            <h4>Calculation</h4>
+            <p>Given:</p>
+            <p>\( P \) - Price of the bond: $<span id="P-val"></span></p>
+            <p>\( C \) - Annual coupon payment: $<span id="C-val"></span></p>
+            <p>\( F \) - Face or par value of the bond: $<span id="F-val"></span></p>
+            <p>\( n \) - Years to maturity: <span id="n-val"></span> year(-s)</p>
+            <p>\( r \) - Estimated yield to maturity</p>
+            <p>The price of the bond is calculated by the formula:</p>
+            <p>\[ P = \sum_{t=1}^{n} \frac{C} {(1 + r)^t} + \frac{F} {(1 + r)^n} \]</p>
+            <p>After substituting the given values, we get:</p>
+            <p>
+            <div id="equation">
+                <!-- The LaTeX equation will be inserted here by the JavaScript code -->
+            </div>
+            </p>
+            <p>To calculate the yield to maturity \( r \), we need to solve this equation for \( r \).</p>
+            <p>Using a numerical method like the Newton-Raphson method or Brent's method, we find the root of this equation to estimate the yield to maturity, \( r \).</p>
+        </div>  
+        <div>
+        <h4>Bond parameters</h4>
+        <table class="explanation-table">
+            <thead>
+                <tr>
+                    <th style="border:1px solid black;">Term</th>
+                    <th style="border:1px solid black;">Introduction</th>
+                    <th style="border:1px solid black;">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Yield to Maturity (YTM)</strong></td>
+                    <td style="border:1px solid black;">The total annual return a bondholder can expect if they keep the bond until it matures.</td>
+                    <td style="border:1px solid black;">Yield to Maturity (YTM) is a fundamental concept in the bond market. It represents the total annualized return anticipated by an investor who purchases a bond and holds it until its maturity. This expected return consists of the income received from periodic interest payments, or coupons, and any capital gain or loss realized when the bond matures or is sold. YTM is particularly important because it enables comparison of bonds with varying maturities, coupons, and prices. It's a critical metric presented in bond yield tables, assisting investors in making informed decisions about which bonds to purchase. For easier understanding, the YTM can be likened to the bond's Internal Rate of Return (IRR) - the discount rate that equates the present value of the bond's future cash flows to its current market price. The YTM assumes that all future coupon payments and the principal repayment at maturity are reinvested at the YTM rate. This is a theoretical assumption that may not hold true in reality, as the reinvestment rate can change over time depending on market conditions. Therefore, the actual return could be different if the bond is sold before maturity or if the issuer defaults or redeems the bond early. Always consider these factors while making investment decisions.</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Face Value/Par Value</strong></td>
+                    <td style="border:1px solid black;">The amount the bond issuer promises to pay back when the bond is due.</td>
+                    <td style="border:1px solid black;">This is the amount of money a bond issuer promises to repay the bondholder at the bond's maturity date. It's typically set at issuance and does not change.</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Coupon Rate</strong></td>
+                    <td style="border:1px solid black;">The yearly interest rate paid by the bond issuer on the bond's face value.</td>
+                    <td style="border:1px solid black;">This is the annual interest rate the issuer agrees to pay on the bond's face value. This rate is typically fixed and is expressed as a percentage of the bond's face value.</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Coupon Dates</strong></td>
+                    <td style="border:1px solid black;">The dates when the bond issuer pays the interest to the bondholder.</td>
+                    <td style="border:1px solid black;">These are the dates when the issuer pays the interest to the bondholder. Coupon payments are typically made on a semi-annual basis.</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Maturity Date</strong></td>
+                    <td style="border:1px solid black;">The date when the bond issuer has to pay back the bond's face value.</td>
+                    <td style="border:1px solid black;">This is the date when the bond issuer must repay the bond's face value to the bondholder. It's the final date of a bond's life.</td>
+                </tr>
+                <tr>
+                    <td style="border:1px solid black;"><strong>Issue Price</strong></td>
+                    <td style="border:1px solid black;">The price at which the bond is first sold to investors.</td>
+                    <td style="border:1px solid black;">This is the price at which the bond is initially sold to investors. It can be issued at par (same price as the face value), at a premium (higher price than the face value), or at a discount (lower price than the face value).</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Understanding these parameters will give you a solid base for valuing bonds, assessing their risk, and considering them in the context of a diversified investment portfolio.</p>
+        </div>          
+    </div>
+    <div class="box">
+        <h2>Disclaimer</h2>
+        <p>
+            The information provided on this website is for educational and informational purposes only. It does not constitute any form of advice or recommendation on financial products, investments, or strategies, and it should not be relied upon in making any financial decisions. 
+        </p>
+        <p>
+            This website does not guarantee the accuracy, completeness, or reliability of the information contained herein. Users of this website should seek advice from qualified, independent financial advisors to ensure their decisions meet their personal financial needs and circumstances.
+        </p>
+        <p>
+            Past performance of any investment does not guarantee future results. Investing in financial instruments involves a high degree of risk and may not be suitable for all investors. The value of investments can go down as well as up, and it is possible to lose some or all of your initial investment.
+        </p>
+        <p>
+            The owner and operator of this website will not be liable for any loss, damage, cost, or expense incurred or suffered by you in connection with the use of, or reliance on, any information provided on this website. 
+        </p>
+    </div>
+
+<!-- Include MathJax library -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<script>
+    function showNotification(message) {
+        closeNotifications();
+        var notificationMessages = document.getElementById('notification-messages');
+        var messageElement = document.createElement('p');
+        messageElement.classList.add('notification-message');
+        messageElement.innerText = message;
+        notificationMessages.appendChild(messageElement);
+
+        document.getElementById('notification').style.display = 'block';
+    }
+
+    function closeNotifications() {
+        document.getElementById('notification').style.display = 'none';
+        document.getElementById('notification-messages').innerHTML = '';
+    }
+
+    window.onload = function() {
+        function calculateYTM() {
+            var form = document.getElementById('ytm-form');
+
+            if (!form.checkValidity()) {
+                form.reportValidity(); // This line will show built-in browser validation messages
+                updateEquation();
+                return;
+            }
+
+            fetch('/ytm?' + new URLSearchParams(new FormData(form)), {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var precision = parseFloat(document.getElementById('precision').value);
+                document.getElementById('result').innerText = 'The numerically estimated YTM is: \\( r = \\) ' + (data.YTM * 100).toFixed(precision) + "%";
+                MathJax.typeset();
+            })
+            .catch(error => {
+                showNotification('An error occurred while calculating YTM: ' + error);
+            });
+        }
+
+        function updateEquation() {
+            let P = document.getElementById('P').value;
+            let n = document.getElementById('n').value;
+            let C = document.getElementById('C').value;
+            let F = document.getElementById('F').value;
+
+            let equation = `\\[ P = \\sum_{t=1}^{n} \\frac{C} {(1 + r)^t} + \\frac{F} {(1 + r)^{n}} \\]`;
+
+            equation = equation.replace(/P/g, P).replace(/n/g, n).replace(/C/g, C).replace(/F/g, F);
+
+            let equationElement = document.getElementById('equation');
+            equationElement.textContent = equation;
+            MathJax.typesetPromise([equationElement]);
+
+            // Update values in the text sections
+            document.getElementById('P-val').textContent = P;
+            document.getElementById('n-val').textContent = n;
+            document.getElementById('C-val').textContent = C;
+            document.getElementById('F-val').textContent = F;
+        }
+
+        document.getElementById('ytm-form').addEventListener('input', function() {
+            updateEquation();
+            calculateYTM();
+        });
+
+        updateEquation();
+        calculateYTM();
+    }
+</script>
+
+</body>
+</html>
