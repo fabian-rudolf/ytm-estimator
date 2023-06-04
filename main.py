@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.testclient import TestClient
-from pydantic import BaseModel, Field
 from scipy.optimize import newton, brentq
 from typing import Optional
 import logging
